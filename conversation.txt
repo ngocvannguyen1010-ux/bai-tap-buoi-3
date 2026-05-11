@@ -1,0 +1,250 @@
+================================================================
+LOG SESSION: Setup Skill /research cho Whale Island Resort Blog
+Ngày: 2026-05-11
+Email: ngocvannguyen1010@gmail.com
+Thư mục dự án: c:\Users\ADMIN\Claude\
+================================================================
+
+
+╔══════════════════════════════════════════════════════════════╗
+║ 1. MỤC TIÊU BAN ĐẦU                                          ║
+╚══════════════════════════════════════════════════════════════╝
+
+Xây dựng 1 Claude Code skill phục vụ research search intent
+cho từ khóa SEO trên blog Whale Island Resort.
+
+Yêu cầu output cho mỗi keyword:
+- Who: chân dung người tìm kiếm (nhân khẩu học, đã biết gì)
+- What: thông tin họ muốn (xếp theo ưu tiên)
+- Why: lý do tìm kiếm (khách quan + chủ quan)
+- Insight: động lực sâu + pain point
+
+Trigger: gõ "/research <chủ đề>" trong Claude Code.
+Format output: file markdown.
+Lưu skill ở cấp dự án (folder .claude).
+
+
+╔══════════════════════════════════════════════════════════════╗
+║ 2. CÁC FILE ĐÃ TẠO/CHỈNH SỬA                                 ║
+╚══════════════════════════════════════════════════════════════╝
+
+[A] SKILL CHÍNH
+File: c:\Users\ADMIN\Claude\.claude\skills\research\SKILL.md
+Vai trò: Skill /research chạy khi user gõ "/research <keyword>"
+Nội dung: Quy trình 6 bước (thu thập SERP → phân tích → output)
+         + Template markdown output
+         + Bối cảnh Whale Island Resort tích hợp sẵn
+
+[B] CHECKLIST RULES (do user tự tạo trước đó)
+File: c:\Users\ADMIN\Claude\.claude\skills\research\whale_island_search_intent_checklist.md
+Vai trò: Rules nâng cao về brand positioning, audience archetypes,
+         content angle. Hiện áp dụng thủ công khi research.
+
+[C] CẤU HÌNH MCP SERVER
+File: c:\Users\ADMIN\Claude\.mcp.json
+Vai trò: Khai báo Tavily MCP server (cầu nối tới Tavily Search API)
+Nội dung:
+{
+  "mcpServers": {
+    "tavily": {
+      "command": "npx",
+      "args": ["-y", "tavily-mcp"],
+      "env": {
+        "TAVILY_API_KEY": "tvly-dev-xxxxxx..."
+      }
+    }
+  }
+}
+
+[D] KẾT QUẢ RESEARCH ĐÃ TẠO
+
+File 1: c:\Users\ADMIN\Claude\research-output\tour-nha-trang-2026-05-11.md
+   - Từ khóa: "tour Nha Trang"
+   - Phương pháp: Suy luận thuần (chưa có Tavily)
+   - 5 persona, insight chi tiết, content angle "compare & redirect"
+
+File 2: c:\Users\ADMIN\Claude\research-output\tour-du-lich-nha-trang-2026-05-11.md
+   - Từ khóa: "tour du lịch Nha Trang"
+   - Phương pháp: Tavily SERP thật + checklist user áp dụng
+   - Có cảnh báo brand-fit ngay đầu file
+   - Trích dẫn pain point thật từ Otofun
+   - Xác nhận VnExpress đã mention Hòn Ông là "địa điểm ít người biết"
+
+
+╔══════════════════════════════════════════════════════════════╗
+║ 3. STACK CÔNG NGHỆ ĐÃ SETUP                                  ║
+╚══════════════════════════════════════════════════════════════╝
+
+- Claude Code (IDE extension trên VS Code)
+- Node.js v24.15.0
+- npm 11.12.1
+- Tavily MCP Server v0.2.19 (package: tavily-mcp)
+- Tavily API: free tier 1000 search/tháng
+
+Tavily tools đang hoạt động:
+- mcp__tavily__tavily_search   (web search)
+- mcp__tavily__tavily_extract  (đọc nội dung URL cụ thể)
+- mcp__tavily__tavily_crawl    (crawl website)
+- mcp__tavily__tavily_map      (sitemap)
+- mcp__tavily__tavily_research (research workflow)
+
+
+╔══════════════════════════════════════════════════════════════╗
+║ 4. CÁCH SỬ DỤNG SKILL HÀNG NGÀY                              ║
+╚══════════════════════════════════════════════════════════════╝
+
+CÚ PHÁP:
+   /research <từ khóa>
+
+VÍ DỤ:
+   /research resort biệt lập Khánh Hòa
+   /research lặn ngắm cá voi Việt Nam
+   /research healing retreat Vietnam
+   /research wellness resort Nha Trang
+
+QUY TRÌNH SKILL TỰ ĐỘNG CHẠY:
+   1. Thu thập 4 query Tavily song song (SERP, review, forum, PAA)
+   2. Phân tích intent + biến thể từ khóa
+   3. Xác định 2-5 persona Who
+   4. Liệt kê What theo ưu tiên
+   5. Phân tích Why (khách quan + chủ quan)
+   6. Đào insight sâu + pain point + Aha moment
+   7. Xuất file vào research-output/<slug>-<ngày>.md
+
+
+╔══════════════════════════════════════════════════════════════╗
+║ 5. ĐIỂM CẦN LƯU Ý / BẢO MẬT                                  ║
+╚══════════════════════════════════════════════════════════════╝
+
+[!] FILE .mcp.json CHỨA API KEY
+    - Không up file này lên Github công khai
+    - Nếu dùng Git: thêm ".mcp.json" vào .gitignore
+    - Nếu lộ key: vào dashboard Tavily → Regenerate key →
+      paste key mới vào .mcp.json → reload Claude Code
+
+[!] FILE .mcp.json LÀ FILE ẨN
+    - Bắt đầu bằng dấu chấm "."
+    - Windows Explorer mặc định ẩn (bật "Hidden items" để thấy)
+    - VS Code thì hiển thị bình thường
+
+[!] FREE TIER TAVILY
+    - 1000 search/tháng miễn phí
+    - Mỗi lần /research tốn ~4 search → ~250 keyword/tháng OK
+    - Nếu vượt: vào Tavily dashboard kiểm tra usage
+
+
+╔══════════════════════════════════════════════════════════════╗
+║ 6. TROUBLESHOOTING                                           ║
+╚══════════════════════════════════════════════════════════════╝
+
+Q: Gõ /research mà skill không xuất hiện trong autocomplete?
+A: Reload window (Ctrl+Shift+P → "Reload Window") để Claude Code
+   nạp lại file SKILL.md.
+
+Q: Tavily báo lỗi "connecting..." mãi không xong?
+A: Lần đầu npx tải gói tavily-mcp mất ~30s-1 phút.
+   Lần sau sẽ nhanh do đã cache.
+
+Q: Tavily báo "rate limit exceeded"?
+A: Đã dùng hết 1000 search/tháng free tier. Đợi tháng sau
+   hoặc nâng cấp paid plan trên Tavily dashboard.
+
+Q: Muốn dùng Tavily cho mọi dự án trên máy (không chỉ folder này)?
+A: Báo Claude chuyển .mcp.json lên user-level config.
+
+Q: Output research không như ý?
+A: Sửa SKILL.md (tại .claude/skills/research/) → reload window.
+
+
+╔══════════════════════════════════════════════════════════════╗
+║ 7. QUYẾT ĐỊNH QUAN TRỌNG TRONG SESSION                       ║
+╚══════════════════════════════════════════════════════════════╝
+
+[Quyết định 1] Skill ở cấp dự án (.claude/skills/), không cấp user
+   → Lý do: muốn skill đi kèm dự án Whale Island Resort
+
+[Quyết định 2] Chọn Tavily làm SEO research API
+   → Lý do: free tier hào phóng nhất (1000/tháng), MCP có sẵn,
+     trả về raw content chứ không chỉ snippet
+   → Đã cân nhắc nhưng KHÔNG chọn lúc này:
+      - DataForSEO (có volume search thật, để dành cho giai đoạn 2)
+      - Brave Search (free tier ít hơn)
+      - SerpAPI (paid)
+      - Ahrefs/SEMrush API (giá $200+/tháng, dùng khi nghiêm túc về SEO)
+
+[Quyết định 3] Giữ .mcp.json ở gốc dự án (không chuyển user-level)
+   → Lý do: nếu sau này share dự án qua Git, file MCP đi kèm,
+     đồng nghiệp/freelancer chỉ cần thay API key của họ vào.
+
+[Quyết định 4] Skill nâng cấp dùng Tavily, fallback WebSearch
+   → Đảm bảo skill vẫn chạy được kể cả khi Tavily down/hết hạn.
+
+
+╔══════════════════════════════════════════════════════════════╗
+║ 8. CÁC BƯỚC TIẾP THEO ĐỀ XUẤT                                ║
+╚══════════════════════════════════════════════════════════════╝
+
+[Ngắn hạn — có thể làm ngay]
+□ Tích hợp checklist whale_island_search_intent_checklist.md
+  vào SKILL.md để skill tự động áp dụng (không cần nhắc thủ công)
+□ Research thêm các keyword phù hợp brand (theo checklist):
+  - "healing retreat Việt Nam"
+  - "resort biệt lập Khánh Hòa"
+  - "đảo Hòn Ông cá voi"
+  - "wellness retreat Vietnam"
+  - "private island Vietnam"
+  - "digital detox resort Vietnam"
+□ Draft outline bài blog từ research đã có
+
+[Trung hạn — khi đã chạy SEO đều]
+□ Thêm DataForSEO MCP để có search volume thật (~$5-10/tháng)
+□ Tạo skill /draft-outline để chuyển từ research → outline bài
+□ Tạo skill /seo-check để check bài viết trước khi publish
+
+[Dài hạn — khi SEO là kênh chiến lược]
+□ Setup Google Search Console MCP (free) để biết keyword nào
+  đang dẫn về site Whale Island Resort thật
+□ Cân nhắc Ahrefs/SEMrush API nếu cần competitor analysis sâu
+
+
+╔══════════════════════════════════════════════════════════════╗
+║ 9. INSIGHT NỔI BẬT TỪ 2 RESEARCH ĐÃ CHẠY                     ║
+╚══════════════════════════════════════════════════════════════╝
+
+[Insight 1] Keyword "tour Nha Trang" và biến thể KHÔNG phải
+   keyword tốt cho BLOG của Whale Island Resort
+   → Quá Commercial/Transactional → nên dành cho landing page
+   → Lệch brand positioning (eco-luxury vs tour công nghiệp)
+
+[Insight 2] Sub-niche "Nha Trang ít người biết / yên tĩnh /
+   biệt lập / mùa cá voi" là SƯỜN VÀNG cho Whale Island
+   → SERP đang trống (VnExpress chỉ có 1 bài tổng hợp ngắn)
+   → 100% khớp brand positioning
+   → User pain point đã được verbalize thật trên Otofun
+
+[Insight 3] Mùa cá voi vịnh Vân Phong (tháng 2-5) là UNIQUE
+   SELLING POINT của Hòn Ông mà ít blog Việt khai thác
+   → Có thể làm content trụ cột theo mùa
+   → SEO + booking conversion cao trong cửa sổ này
+
+[Insight 4] 5 persona đối tượng:
+   1. Cặp đôi đi lần 2 — Wellness Couple
+   2. Gia đình thành thị đi lần đầu — Family Explorer
+   3. Người kiệt sức cần healing — Wellness Solo
+   4. Người tổ chức team trip — Group Leader
+   5. Người đưa bố mẹ đi du lịch — Filial Trip Planner
+
+[Insight 5] Pain point chung mạnh nhất (xác nhận từ forum thật):
+   "Sợ chuyến đi bị công nghiệp hóa — sale quảng cáo
+    tour 3 đảo 4 đảo nhiều quá"
+   → Bài viết bắt đúng câu này = win 50% người đọc
+
+
+================================================================
+                     KẾT THÚC LOG SESSION
+================================================================
+File này được tạo tự động khi user yêu cầu lưu cuộc trò chuyện.
+Tham khảo các file chi tiết tại:
+  - SKILL.md tại .claude/skills/research/
+  - Output research tại research-output/
+  - Config MCP tại .mcp.json (gốc dự án)
